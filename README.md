@@ -34,7 +34,16 @@ cd <workspace>\OctoSense-App-Hub
 cargo build --release -p octosense-card-host -p octosense-app-hub
 ```
 
-运行与截图（PowerShell）：
+宿主编译好后，本仓库自带脚本可以直接运行（自动设置 `OCTO_HUB` / `OCTO_CARD_HOST`）：
+
+```powershell
+.\run.ps1                 # 以可见窗口启动，自己点着看
+.\run.ps1 -Check          # 只跑 hub 准入检查并盖戳
+.\run.ps1 -Hidden         # 无头启动，不占屏幕（适合截图 / agent）
+.\run.ps1 -Port 8142      # 换端口
+```
+
+脚本等价的手动命令（运行与截图，PowerShell）：
 
 ```powershell
 $env:PYTHONUTF8='1'
