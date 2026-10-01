@@ -1,0 +1,14 @@
+{
+  "capabilities": [
+    "storage",
+    "octos.session.open",
+    "octos.turn.start"
+  ],
+  "id": "health-calendar",
+  "integrity": {
+    "bundle_blake3": "cfb309e62f9ab22acbb5b2d24f6c0741f0978c3414256d1f9a26035a8b259d4f"
+  },
+  "name": "身心日历",
+  "schema": 1,
+  "version": "0.1.0"
+}

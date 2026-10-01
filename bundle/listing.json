@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "subtitle": "记录每天的饮食、睡眠与身心状态",
+  "description": "身心日历把每天的饮食、睡眠时长与质量、情绪精力、身体感受和备注保存在设备本地。月历会用圆点标出已有记录的日期；你可以随时回看某一天，并在需要时把主动保存的记录交给 OctoSense 的设备助手做非医疗建议的关联分析。应用不保存密码、密钥或模型令牌，也不依赖 AI 才能完成日常记录。\n\n重要说明：AI 分析只提供一般健康信息，不构成诊断或治疗建议；出现严重或持续加重的不适时，请联系专业医生或急救服务。当前官方 OctoSense 宿主尚未向商店应用提供 octos 服务，因此 AI 按钮会显示明确不可用状态，其余功能不受影响。",
+  "category": "health",
+  "keywords": ["calendar", "food", "mood", "sleep", "health", "日记", "饮食", "情绪"],
+  "screenshots": ["screenshots/01-calendar.png", "screenshots/02-record.png", "screenshots/03-ai-unavailable.png"],
+  "icon": "assets/icon.svg",
+  "platforms": ["windows"],
+  "publisher": {
+    "name": "Ivanbeethoven",
+    "support": "https://github.com/Ivanbeethoven/octosense-health-calendar/issues",
+    "privacy_policy_url": "https://github.com/Ivanbeethoven/octosense-health-calendar/blob/main/PRIVACY.md"
+  },
+  "release_notes": "首个可运行版本：月历、按日记录、本地存储、AI 辅助分析入口。",
+  "age_rating": "all",
+  "license": "Apache-2.0"
+}
