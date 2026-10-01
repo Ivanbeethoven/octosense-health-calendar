@@ -1,14 +1,15 @@
 {
   "capabilities": [
     "storage",
+    "camera",
     "octos.session.open",
     "octos.turn.start"
   ],
   "id": "health-calendar",
   "integrity": {
-    "bundle_blake3": "73ff53d310f5c5c1e4e57496a42ab060f8197b7d67482cb1ae0f99bbfc733bef"
+    "bundle_blake3": "e1068f8012934638b7c08be846a46417f1e5caa6b980c77c2f0d3aee82e7e223"
   },
   "name": "身心日历",
   "schema": 1,
-  "version": "0.1.0"
+  "version": "0.2.0"
 }
