@@ -84,6 +84,40 @@ fn logged_count(){
     return n
 }
 
+fn month_count(y, m){
+    let n = 0
+    let total = days_in_month(y, m)
+    for i in total {
+        if has_entry(date_key(y, m, i + 1)) { n = n + 1 }
+    }
+    return n
+}
+
+fn streak_days(){
+    let t = local_time()
+    let y = t.year
+    let m = t.month
+    let d = t.day
+    let n = 0
+    let guard = 0
+    while guard < 370 {
+        if !has_entry(date_key(y, m, d)) { break }
+        n = n + 1
+        if d > 1 {
+            d = d - 1
+        } else if m > 1 {
+            m = m - 1
+            d = days_in_month(y, m)
+        } else {
+            y = y - 1
+            m = 12
+            d = 31
+        }
+        guard = guard + 1
+    }
+    return n
+}
+
 fn load_store(){
     if fs.exists("health_calendar.json") {
         let v = fs.read("health_calendar.json").parse_json()
@@ -100,12 +134,16 @@ fn month_title(){
 }
 
 fn detail_title(){
-    return "" + selected_month + "月" + selected_day + "日 周" + week_labels[weekday_of(selected_year, selected_month, selected_day)]
+    let s = "" + selected_month + "月" + selected_day + "日 周" + week_labels[weekday_of(selected_year, selected_month, selected_day)]
+    if selected_date == today_key { s = s + " · 今天" }
+    return s
 }
 
 fn render_month(){
     ui.month_label.set_text(month_title())
-    ui.summary.set_text("已经记录 " + logged_count() + " 天。点选日期开始记录。")
+    ui.stat_month.set_text("" + month_count(view_year, view_month))
+    ui.stat_streak.set_text("" + streak_days())
+    ui.stat_total.set_text("" + logged_count())
     ui.calendar.render()
 }
 
@@ -252,7 +290,7 @@ let accent_dark = #x1f5d4d
 let line = #xe8e2d7
 let warm = #xd9825b
 
-let Input = TextInput{width: Fill height: 42 empty_text: ""
+let Input = TextInput{width: Fill height: 40 empty_text: ""
     draw_bg +: {color: #xf7f4ee color_hover: #xf7f4ee color_focus: #xf7f4ee color_empty: #xf7f4ee
         border_color: line border_color_hover: line border_color_focus: accent border_color_empty: line
         border_radius: 10.0}
@@ -278,22 +316,40 @@ let Ghost = ButtonFlat{height: 36 padding: Inset{left: 12 right: 12}
     draw_text +: {color: accent color_hover: accent color_down: accent_dark text_style +: {font_size: 13}}
 }
 
-let DayCell = GestureView{width: 50.85 height: 46 flow: Down align: Align{x: 0.5 y: 0.2} spacing: 0
-    bg := RoundedView{width: 36 height: 34 flow: Overlay new_batch: true show_bg: true
-        draw_bg.color: #x00000000 draw_bg.border_radius: 17.0 draw_bg.border_size: 0.0 draw_bg.border_color: accent
+let DayCell = GestureView{width: 50.85 height: 42 flow: Down align: Align{x: 0.5 y: 0.2} spacing: 0
+    bg := RoundedView{width: 34 height: 30 flow: Overlay new_batch: true show_bg: true
+        draw_bg.color: #x00000000 draw_bg.border_radius: 16.0 draw_bg.border_size: 0.0 draw_bg.border_color: accent
         num := Label{width: Fill height: Fill align: Align{x: 0.5 y: 0.5} text: "" draw_text.color: ink draw_text.text_style.font_size: 13}
     }
-    dot := Label{text: " " draw_text.color: accent draw_text.text_style: theme.font_bold{font_size: 12}}
+    dot := Label{width: Fill height: 12 text: " " align: Align{x: 0.5 y: 0.5} draw_text.color: accent draw_text.text_style: theme.font_bold{font_size: 12}}
 }
 
 SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
     ScrollYView{width: Fill height: Fill flow: Down padding: Inset{left: 14 right: 14 top: 14 bottom: 28} spacing: 12
         View{width: Fill height: Fit flow: Right align: Align{y: 0.5}
             View{width: Fill height: Fit flow: Down spacing: 3
-                Label{text: "身心日历" draw_text.color: ink draw_text.text_style: theme.font_bold{font_size: 28}}
+                Label{text: "身心日历" draw_text.color: ink draw_text.text_style: theme.font_bold{font_size: 26}}
                 Label{text: "记录饮食、睡眠、情绪和身体感受" draw_text.color: secondary draw_text.text_style.font_size: 12}
             }
             Chip{text: "今天" on_click: || go_today()}
+        }
+
+        View{width: Fill height: Fit flow: Right spacing: 8
+            RoundedView{width: Fill height: 58 flow: Down align: Align{x: 0.5 y: 0.5} spacing: 1
+                new_batch: true show_bg: true draw_bg.color: card draw_bg.border_radius: 16.0
+                stat_month := Label{width: Fill height: 30 text: "0" align: Align{x: 0.5 y: 0.5} draw_text.color: accent draw_text.text_style: theme.font_bold{font_size: 22}}
+                Label{width: Fill height: 18 text: "当月记录" align: Align{x: 0.5 y: 0.5} draw_text.color: secondary draw_text.text_style.font_size: 11}
+            }
+            RoundedView{width: Fill height: 58 flow: Down align: Align{x: 0.5 y: 0.5} spacing: 1
+                new_batch: true show_bg: true draw_bg.color: card draw_bg.border_radius: 16.0
+                stat_streak := Label{width: Fill height: 30 text: "0" align: Align{x: 0.5 y: 0.5} draw_text.color: accent draw_text.text_style: theme.font_bold{font_size: 22}}
+                Label{width: Fill height: 18 text: "连续天数" align: Align{x: 0.5 y: 0.5} draw_text.color: secondary draw_text.text_style.font_size: 11}
+            }
+            RoundedView{width: Fill height: 58 flow: Down align: Align{x: 0.5 y: 0.5} spacing: 1
+                new_batch: true show_bg: true draw_bg.color: card draw_bg.border_radius: 16.0
+                stat_total := Label{width: Fill height: 30 text: "0" align: Align{x: 0.5 y: 0.5} draw_text.color: accent draw_text.text_style: theme.font_bold{font_size: 22}}
+                Label{width: Fill height: 18 text: "累计记录" align: Align{x: 0.5 y: 0.5} draw_text.color: secondary draw_text.text_style.font_size: 11}
+            }
         }
 
         Card{
@@ -302,17 +358,16 @@ SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
                 month_label := Label{width: Fill text: "2026年10月" align: Align{x: 0.5 y: 0.5} draw_text.color: ink draw_text.text_style: theme.font_bold{font_size: 18}}
                 Ghost{text: "›" on_click: || shift_month(1)}
             }
-            summary := Label{width: Fill text: "" draw_text.color: secondary draw_text.text_style.font_size: 11}
-            View{width: Fill height: 26 flow: Right
+            View{width: Fill height: 22 flow: Right
                 for w in 7 {
                     Label{width: 50.85 text: week_labels[w] align: Align{x: 0.5 y: 0.5} draw_text.color: secondary draw_text.text_style: theme.font_bold{font_size: 11}}
                 }
             }
-            calendar := View{width: Fill height: 276 flow: Down on_render: || {
+            calendar := View{width: Fill height: 252 flow: Down on_render: || {
                 let count = days_in_month(view_year, view_month)
                 let first = weekday_of(view_year, view_month, 1)
                 for week in 6 {
-                    View{width: Fill height: 46 flow: Right
+                    View{width: Fill height: 42 flow: Right
                         for col in 7 {
                             let idx = week * 7 + col
                             let day = idx - first + 1
@@ -328,7 +383,7 @@ SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
                                     DayCell{on_tap: |x, y| select_day(view_year, view_month, day) bg.num.text: "" + day dot.text: mark(k) dot.draw_text.color: accent}
                                 }
                             } else {
-                                View{width: 50.85 height: 46}
+                                View{width: 50.85 height: 42}
                             }
                         }
                     }
@@ -336,11 +391,13 @@ SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
             }}
         }
 
-        RoundedView{width: Fill height: Fit flow: Down padding: 14 spacing: 10
-            new_batch: true show_bg: true draw_bg.color: card draw_bg.border_radius: 18.0
-            View{width: Fill height: Fit flow: Down spacing: 2
-                detail_title := Label{width: Fill text: "" draw_text.color: ink draw_text.text_style: theme.font_bold{font_size: 18}}
-                save_status := Label{width: Fill text: "" draw_text.color: accent draw_text.text_style.font_size: 11}
+        Card{
+            View{width: Fill height: Fit flow: Right align: Align{y: 0.5} spacing: 8
+                View{width: Fill height: Fit flow: Down spacing: 2
+                    detail_title := Label{width: Fill text: "" draw_text.color: ink draw_text.text_style: theme.font_bold{font_size: 18}}
+                    save_status := Label{width: Fill text: "" draw_text.color: accent draw_text.text_style.font_size: 11}
+                }
+                Ghost{text: "清空当天" on_click: || clear_current()}
             }
             Label{text: "饮食（吃了什么、时间、份量）" draw_text.color: secondary draw_text.text_style.font_size: 11}
             food_input := Input{empty_text: "例如：早餐燕麦和鸡蛋；午后拿铁"}
@@ -375,12 +432,8 @@ SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
                 Chip{text: "疼痛" on_click: || ui.body_input.set_text("疼痛")}
             }
             Label{text: "备注" draw_text.color: secondary draw_text.text_style.font_size: 11}
-            note_input := Input{height: 64 empty_text: "补充当天发生的事情、用药或压力来源"}
-            View{width: Fill height: Fit flow: Right align: Align{y: 0.5} spacing: 6
-                Ghost{text: "清空当天" on_click: || clear_current()}
-                View{width: Fill height: Fit}
-                Primary{text: "保存记录" on_click: || save_current()}
-            }
+            note_input := Input{height: 60 empty_text: "补充当天发生的事情、用药或压力来源"}
+            Primary{width: Fill text: "保存记录" on_click: || save_current()}
         }
 
         Card{
@@ -391,7 +444,7 @@ SolidView{width: Fill height: Fill flow: Down draw_bg.color: bg
             ai_status := Label{width: Fill text: "" draw_text.color: secondary draw_text.text_style.font_size: 11}
             ai_answer := Label{width: Fill text: "" max_lines: 30 draw_text.color: ink draw_text.text_style.font_size: 13}
             Primary{width: Fill text: "根据记录生成分析" on_click: || analyze()}
-            Label{text: "当前 OctoSense 官方宿主尚未为商店应用提供 octos 服务；不可用状态是预期行为。应用不会索取或保存模型密钥。" draw_text.color: secondary draw_text.text_style.font_size: 10}
+            Label{text: "当前 OctoSense 官方宿主尚未向商店应用提供 octos 服务，不可用属于预期；应用不会索取或保存模型密钥。" draw_text.color: secondary draw_text.text_style.font_size: 10}
         }
     }
 }
