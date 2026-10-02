@@ -1,87 +1,98 @@
-# 身心日历（OctoSense Script App）
+# 身心日历
 
-一个可运行的 OctoSense Script App：在月历中记录每天的**饮食、健身、保健品和身心状态**，支持给当餐拍照，并可选地把记录交给设备助手做非医疗的关联分析。
+**把每天的饮食、训练、补剂与身心感受放回时间线上，让记录可回看，让 AI 的观察有依据。**
 
-所有字段都是可选的，没有任何一项必填；日常记录完全保存在应用隔离存储中，不联网也能用。
+[Agent2App Hackathon 2026](https://github.com/gosimfoundation/hackathon-agenticapp26) 参赛作品 · OctoSense Script App · v0.3.0 · Apache-2.0
 
-## 界面总览
+<p align="center">
+  <img src="bundle/screenshots/01-calendar.png" width="310" alt="身心日历月视图和当天饮食记录">
+  <img src="bundle/screenshots/07-ai.png" width="310" alt="基于演示记录生成的 AI 辅助分析">
+</p>
+<p align="center"><sub>Windows card-host 实际运行截图：月历记录与真实模型分析。截图使用模拟的个人健康数据。</sub></p>
 
-| 月历与统计 | 历史月份 |
+[设计思路](#设计思路) · [功能与界面](#功能与界面) · [AI 分析](#ai-辅助分析) · [运行与验证](#运行与验证) · [移动端与发布](#移动端与发布)
+
+## 作品概览
+
+很多健康记录工具让人先填一份完整表单，回头却很难回答「这几天吃了什么、练了什么、感觉有什么变化」。身心日历把**日期作为主索引**：随手记下当天有价值的片段，在月历中找到它们，再由用户主动发起跨日期的 AI 辅助分析。
+
+一次典型使用：选中日期 → 勾选吃过的类别、训练项目或补剂，补充睡眠与身体感受 → 回看前后几天 → 点击「根据记录生成分析」，得到带不确定性提示的观察与下一步记录建议。**记录不依赖 AI；AI 不代替诊断。**
+
+| 已实现 | 当前边界 |
 | --- | --- |
-| ![月历与统计](bundle/screenshots/01-calendar.png) | ![历史月份](bundle/screenshots/02-month.png) |
+| 月历回看；饮食、健身、保健品、身心记录；自定义选项；本地持久化；主动触发的真实 AI 分析 | Windows `card-host` 已验证；Windows 相机宿主不可用；手机与其他桌面平台尚未实测 |
 
-| 饮食 | 健身 |
+## 设计思路
+
+| 设计选择 | 为什么这样做 |
 | --- | --- |
-| ![饮食](bundle/screenshots/03-diet.png) | ![健身](bundle/screenshots/04-fitness.png) |
+| **以日历组织，而非以问卷组织** | 月历标出有记录的日期，并显示当月记录、连续天数和累计记录；翻月、选日即可把零散事件放回时间顺序。 |
+| **所有字段可选** | 饮食、健身、保健品、身心分成四个标签页。只记一顿饭或一次不适也成立，不要求每天完成整套表单。切换日期前会保存当天编辑。 |
+| **预设选项 + 自由文字 + 个人配置** | 常见类别、菜系、器械和补剂可点选；细节仍可自由描述。设置页可增删选项，历史记录不会因删掉选项而消失。 |
+| **本地优先、分析需授权** | 日常记录与照片留在应用隔离存储；只有主动点击分析才发送文字，照片不发送。AI 失败不影响记录和回看。 |
+| **把相关性与因果分开** | 模型只负责整理线索与建议继续观察的变量，不宣称找到病因，不给医疗诊断。 |
 
-| 保健品 | 身心状态 |
+## 功能与界面
+
+| 模块 | 可以记录什么 |
 | --- | --- |
-| ![保健品](bundle/screenshots/05-supplements.png) | ![身心状态](bundle/screenshots/06-body.png) |
+| **月历** | 前后翻月、回到今天、查看有记录的日期和三项记录统计。 |
+| **饮食** | 粥类、主食、肉类、青菜等类别；家常、川菜、粤菜等菜系/来源；自由文字；可选拍照、查看与删除照片。 |
+| **健身** | 哑铃、杠铃、跑步机、瑜伽垫等项目；组数、每组次数、负重、有氧时长和训练感受。 |
+| **保健品** | 维生素 C、B 族、鱼油等多选，用文字补充剂量与服用时间。 |
+| **身心** | 睡眠时长与质量、情绪/精力、身体感受和备注，附常用快捷标签。 |
+| **设置** | 增删饮食类别、菜系/来源、健身项目和保健品；可恢复默认选项而不清除已有日历记录。 |
 
-![AI 辅助分析](bundle/screenshots/07-ai.png)
+<p align="center">
+  <img src="bundle/screenshots/03-diet.png" width="265" alt="饮食记录">
+  <img src="bundle/screenshots/04-fitness.png" width="265" alt="健身记录">
+  <img src="bundle/screenshots/05-supplements.png" width="265" alt="保健品记录">
+</p>
+<p align="center"><sub>从左到右：饮食、健身、保健品。所有选项和数值均可留空。</sub></p>
 
-![自定义选项](bundle/screenshots/08-settings.png)
+<p align="center">
+  <img src="bundle/screenshots/02-month.png" width="265" alt="历史月份">
+  <img src="bundle/screenshots/06-body.png" width="265" alt="身心状态">
+  <img src="bundle/screenshots/08-settings.png" width="265" alt="自定义选项">
+</p>
+<p align="center"><sub>从左到右：历史月份、身心状态、自定义选项。</sub></p>
 
-## 功能详解
+> 截图来自 Windows `card-host`，内容为演示用的模拟数据。拍照入口已实现，但 Windows 宿主没有相机后端，因此该平台会显示明确的不可用提示；真机拍照尚未验证。
 
-### 月历与统计
+## AI 辅助分析
 
-- 顶部三个数字：**当月记录**、**连续天数**、**累计记录**。
-- 月历可前后翻月，“今天”一键回到当天。
-- 有记录的日期下面显示圆点；今天用描边标出，选中的日期填充实心。
-- 每次切换日期会自动保存上一天的编辑，不会丢内容。
+用户点击「根据记录生成分析」后，应用发送**所选日期与最多 20 条历史记录的文字**，请模型寻找饮食、睡眠、情绪、训练和补剂之间值得观察的关联。分析结果保存在该日期的记录里，之后可以回看；照片不在请求中。优先使用本机配置导入的火山方舟 Responses API 凭据；未配置时尝试 OctoSense 宿主助手。
 
-### 饮食记录
+以 2026-10-01 的**模拟记录**为例，真实方舟模型分析提到：两次辛辣餐后都记录了腹部不适；训练后的疲劳同时伴有睡眠不足，不能直接归因于训练或某种补剂；午后咖啡与睡眠的关系证据较弱。建议继续记录症状出现时间、咖啡因时间、睡眠与训练强度。这展示的是**整理线索、提出可继续观察的问题**，不是医学结论；完整界面见上方 AI 截图。
 
-- **类别多选**：粥类、米面主食、肉类、青菜、蛋奶、水果、汤羹、饮品、甜点。
-- **菜系 / 来源多选**：家常、川菜、粤菜、江浙、西北、日韩、西式、外卖。
-- 也可以只在文本框里自由描述，例如“早餐燕麦粥和鸡蛋；午后拿铁”。
-- **拍照记录**：点击“拍照”打开相机取景，快门后照片存入应用自己的隔离目录（`DCIM/`）。已保存的照片以缩略图显示，点缩略图可全屏查看，“删最后一张”会连文件一起删除。
-- 类别、菜系和照片都是可选的，不选也能只写文字。
+- 提示词要求模型不下诊断、不虚构确定病因；遇到胸痛、呼吸困难、意识异常、自伤想法或持续加重等情况，提醒及时就医。
+- 记录文字作为数据提供给模型，不应被当作指令执行。
+- 请求失败或宿主助手不可用时，界面显示原因，本地记录仍可正常使用。
 
-### 健身记录
+**本应用不提供医疗诊断、治疗或用药建议。**
 
-- **器械 / 项目多选**：哑铃、杠铃、壶铃、跑步机、动感单车、划船机、椭圆机、瑜伽垫、弹力带、徒手。
-- **组数**、**每组次数**、**负重（kg）**、**有氧时长（分钟）** 四个数值输入，留空即为不做该项。
-- 训练细节文本框可以记动作安排和主观感受，例如“深蹲 4 组，最后一组有点吃力”。
+## 实现与数据
 
-### 保健品记录
+这个仓库的应用本体是 [`bundle/`](bundle/)：[`main.splash`](bundle/main.splash) 实现界面和交互，[`manifest.json`](bundle/manifest.json) 声明 `storage`、`camera`、`net` 与宿主助手能力，并将网络访问限定到方舟 HTTPS 主机；[`listing.json`](bundle/listing.json) 提供商店信息和截图。
 
-- **一键多选**：维生素C、维生素B族、维生素D、鱼油、钙片、益生菌、蛋白粉、镁、锌、铁、褪黑素。
-- 用量和时间写在同一个文本框里，例如“维生素C 500mg 早饭后；鱼油 1 粒随午餐”。
+- 日历记录写入应用隔离存储的 `health_calendar.json`；自定义选项、模型名和可选凭据写入 `settings.json`；照片写入同一隔离目录的 `DCIM/`。
+- 不要求登录，不在后台自动上传记录。导入的 AI Key 不进入仓库或截图，但隔离目录中的配置文件是**明文**，须按本机敏感文件管理。
+- 完整数据说明见 [隐私说明](PRIVACY.md)。
 
-### 身心状态
+## 运行与验证
 
-- 睡眠（小时 / 质量）、情绪 / 精力、身体状态（疼痛、肠胃、过敏等）和备注。
-- 每项都带常用快捷标签，例如“轻松 / 平静 / 焦虑 / 低落”“良好 / 疲劳 / 肠胃不适 / 疼痛”，点一下填进输入框。
+### 已验证范围
 
-### 自定义选项
+| 项目 | 结果 |
+| --- | --- |
+| Windows `card-host` | 月历、记录、设置、本地存储和界面截图已在实际宿主运行。 |
+| AI | 使用本机导入的火山方舟凭据实际生成过分析；无配置或服务失败时显示错误。 |
+| Bundle 准入 | 已通过 OctoSense Hub 的 `check`；修改 `bundle/` 后需重新执行检查并更新完整性戳。 |
+| 相机 / 手机 | Windows 相机后端不可用；Android、iOS、macOS、Linux 和真机未实测。 |
 
-- 点右上角“设置”，可分别给饮食类别、菜系、健身器械、保健品添加选项；点现有选项末尾的 `×` 删除。
-- 自定义内容保存在本机应用隔离目录的 `settings.json`，重启后仍在。“恢复默认选项”只重置选项，不清空日历记录或 AI 配置。
-- 删除选项不会抹掉已经保存的历史记录。
+### 在 Windows 启动
 
-### AI 辅助分析
-
-- 按钮“根据记录生成分析”会把**当天记录 + 最多 20 条历史记录**交给 AI，请它寻找饮食、睡眠、情绪、运动、补剂之间的关联，并给出保守、可执行的建议。
-- 提示词明确要求：不下医学诊断、不假装确定病因，并在出现胸痛、呼吸困难、意识异常、自伤想法或持续加重时建议立即就医；同时把记录内容标记为数据而非指令，避免记录里的文字被当成提示词执行。
-- 只有你主动点击才会发送；**照片不会被发送**，只发送文字。Windows 开发环境可从本机配置导入方舟凭据。未配置时尝试 OctoSense 宿主助手。
-- AI 不可用时界面会显示明确原因，其余功能完全不受影响。分析结果保存在当天记录里，切换日期后可重新查看。
-
-2026-10-01 的演示数据已通过方舟 `ark-code-latest` 实际生成分析（原文保存在本机演示记录中）。模型指出：两次辛辣餐后记录了腹胀或胃热；力量训练后的疲劳同时伴随较短睡眠，不能归因于训练或单一补剂；午后拿铁与睡眠的关联证据较弱。它建议继续记录餐后症状、咖啡因时间、睡眠与训练强度，并提醒严重或持续加重的症状应就医。截图见上方“AI 辅助分析”。
-
-### 数据与隐私
-
-- 记录保存在应用隔离目录的 `health_calendar.json`；照片保存在同一隔离目录的 `DCIM/`。
-- 应用不要求登录，也不会在后台自动上传。AI 凭据由本机脚本导入到被 Git 忽略的隔离目录，应用界面不显示它；文件本身是明文。
-- 相机是可选能力：只有在清单里声明 `camera` 时才能调用，未声明会被宿主直接拒绝。
-- 完整说明见 [PRIVACY.md](PRIVACY.md)。
-
-## 编译与运行
-
-### 1. 准备 workspace
-
-按 [OctoScript-App-Design-Flow 快速上手](https://github.com/OctoSense-org/OctoScript-App-Design-Flow/blob/main/docs/QUICKSTART.md) 准备同级的五个仓库：
+按 [OctoScript-App-Design-Flow 快速上手](https://github.com/OctoSense-org/OctoScript-App-Design-Flow/blob/main/docs/QUICKSTART.md) 准备相邻仓库：
 
 ```text
 <workspace>/
@@ -93,100 +104,38 @@
   apps/octosense-app/       # 本仓库
 ```
 
-### 2. 编译宿主
+先编译一次宿主；未修改宿主 Rust 代码时不必重复：
 
 ```powershell
 cd <workspace>\OctoSense-App-Hub
 cargo build --release -p octosense-card-host -p octosense-app-hub
 ```
 
-产物在 `<workspace>\OctoSense-App-Hub\target\release\{hub.exe, card-host.exe}`。只要不改宿主的 Rust 代码，这步不用重复做。
-
-### 3. 运行
-
-本仓库自带脚本，会自动设置 `OCTO_HUB` / `OCTO_CARD_HOST`：
+随后在本仓库运行：
 
 ```powershell
 cd <workspace>\apps\octosense-app
-.\run.ps1                 # 可见窗口，自己点着看
-.\run.ps1 -Check          # 只跑 hub 准入检查并盖戳
-.\run.ps1 -Hidden         # 无头启动，不占屏幕（适合截图 / agent）
-.\run.ps1 -Port 8155      # 换端口（默认 8154）
+.\run.ps1                 # 打开可见窗口
+.\run.ps1 -Check          # Hub 准入检查
+.\run.ps1 -Port 8155      # 默认端口 8154 被占用时
 ```
 
-如果报“禁止运行脚本”，改用：
+PowerShell 禁止执行脚本时可运行 `powershell -ExecutionPolicy Bypass -File .\run.ps1`。[`run.ps1`](run.ps1) 会自动定位同一 workspace 中的 `octo`、`hub.exe` 和 `card-host.exe`。
+
+### 配置自己的 AI
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\run.ps1
-```
-
-### 配置本机 AI
-
-本机已配置火山方舟 Agent Plan 时，在应用目录运行：
-
-```powershell
+# 可先设置 ARK_API_KEY；已有受支持的方舟 Agent Plan Codex 配置时也可直接导入
 .\configure-ai.ps1
-# 然后关闭并重启 App，再选一个有记录的日期点击“根据记录生成分析”
+# 关闭并重启 App，在有文字记录的日期点击「根据记录生成分析」
 ```
 
-脚本优先读取 `ARK_API_KEY` 环境变量；没有时读取 `~/.codex/config.toml` 中指向方舟 Agent Plan 的凭据。可用 `ARK_MODEL` 指定模型（默认从 Codex 配置读取，或在 App 的“设置”里改）。运行 `.\configure-ai.ps1 -Clear` 可清除导入的凭据。`settings.json` 位于 `.local-state/health-calendar/`，已被 Git 忽略；不要把该文件加入截图或仓库。
+[`configure-ai.ps1`](configure-ai.ps1) 优先读取 `ARK_API_KEY`，否则尝试读取本机 Codex 配置中的方舟 Agent Plan 凭据；`ARK_MODEL` 可覆盖模型名。运行 `.\configure-ai.ps1 -Clear` 清除导入凭据。配置写在被 Git 忽略的 `.local-state/health-calendar/settings.json` 中，不要提交它。当前脚本只接受公开的方舟 HTTPS 接口；本地 HTTP 网关不能直接用于此 bundle。
 
-OctoSense 的网络门禁只允许清单中声明的公开 HTTPS 主机。若当前 Codex 配置指向本地 HTTP 网关，导入脚本会保留已经导入的方舟凭据；首次配置时请提供 `ARK_API_KEY`，本地 HTTP 地址不能直接用于这个 bundle。
+如需手动检查、截图或关闭实例，可使用 `OctoScript-App-Design-Flow/tools/octo` 的 `check`、`shot` 命令，以及宿主的 `/quit` 端点。仓库中的 `.gitattributes` 保证 `bundle/` 不发生行尾转换；`main.splash` 的完整性按字节校验。
 
-等价的手动命令：
+## 移动端与发布
 
-```powershell
-$env:PYTHONUTF8='1'
-$env:OCTO_HUB='<workspace>\OctoSense-App-Hub\target\release\hub.exe'
-$env:OCTO_CARD_HOST='<workspace>\OctoSense-App-Hub\target\release\card-host.exe'
-$OCTO='<workspace>\OctoScript-App-Design-Flow\tools\octo'
-python $OCTO run '<workspace>\apps\octosense-app\bundle' --port 8154
-```
+**本仓库是 OctoSense bundle，不是独立 APK。** APK 属于运行 bundle 的 OctoSense 宿主；不能直接把本仓库单独编译为 APK。官方分发路径是按 [发布文档](https://github.com/OctoSense-org/OctoScript-App-Design-Flow/blob/main/docs/PUBLISHING.md) 签名并提交 catalog，签名和最终提交需要发布者本人完成。当前仓库尚未完成发布者签名或手机端验证。
 
-### 4. 校验与截图
-
-```powershell
-# 改过 bundle/ 之后必须重新盖戳，否则宿主会拒绝启动
-python $OCTO check '<workspace>\apps\octosense-app\bundle'
-
-# 截图
-python $OCTO shot 8154 '<workspace>\apps\octosense-app\bundle\screenshots\01-calendar.png'
-
-# 结束运行中的实例
-curl.exe -s http://127.0.0.1:8154/quit
-```
-
-> `.gitattributes` 里的 `bundle/** -text` 必须保留：`main.splash` 会被宿主按字节校验完整性，行尾被 Git 转换会直接导致校验失败。
-
-## 打包与上架
-
-只有 `bundle/` 是提交物（`manifest.json`、`listing.json`、`main.splash`、`assets/`、`screenshots/`）。上架流程见 [PUBLISHING](https://github.com/OctoSense-org/OctoScript-App-Design-Flow/blob/main/docs/PUBLISHING.md)，其中签名和提交是需要本人操作的步骤。
-
-## 关于手机与 APK
-
-这个项目**不是一个可以直接编译成 APK 的独立应用**，它是一个 OctoSense **bundle**（数据 + `main.splash` 脚本），由 OctoSense 宿主来运行。所以：
-
-- **不能**把这一个 bundle 单独编译成 APK。APK 是 OctoSense 宿主本身，一个宿主承载很多 bundle。
-- **想装到手机上，走官方上架**：签名并发布到 catalog 之后，它就会出现在每台手机的商店里。这是官方支持的路径。
-- **想自己出 APK**：需要把整个 OctoSense Android 壳连同这个 bundle 一起编译（bundle 放进 `apps/<name>/bundle/`、登记到 `phone/system-apps.json`，再走 Android 的构建），需要 Android SDK/NDK 和 OctoSense 仓库；这条路径面向 `os.*` 系统应用。
-- **侧载暂时不行**：官方文档明确说“任意 bundle 目前还不能侧载到官方 OctoSense 手机上”，因为手机商店只读取编译进去的 hub 和 anchor。
-
-## 平台支持
-
-| 能力 | Windows | Android / iOS / macOS / Linux |
-| --- | --- | --- |
-| 月历、记录、本地存储 | ✅ 已在 Windows `card-host` 实测 | 未实测 |
-| 相机拍照 | ❌ 宿主无相机后端，显示明确不可用提示 | 宿主有相机实现，未在真机实测 |
-| AI 分析 | 方舟本机配置已实测；无配置时宿主 `octos` 服务可能不可用 | 取决于宿主与配置 |
-
-本仓库的截图均来自 Windows `card-host` 的真实运行。相机不可用是宿主平台的限制，不是应用缺陷：应用会捕获错误并显示原因，其他记录方式照常可用。
-
-## 重要限制
-
-- AI 分析不是医疗诊断或治疗建议。
-- AI 服务不可用时，记录、回看和本地保存仍然完整可用。
-- 当前仅在 Windows 的 `card-host` 上做过运行验证；Android、iOS、macOS 和真机均未验证。
-
-## 许可证
-
-Apache-2.0
+如需自建 APK，必须另行构建完整的 OctoSense Android 宿主并把 bundle 登记为系统应用，依赖 Android SDK/NDK；官方手机商店当前不支持任意 bundle 侧载。此路径未在本项目验证。
