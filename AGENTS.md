@@ -34,7 +34,7 @@ Add this app's own requirements, data sources and tests below.
 ## 本应用的产品与验证要求
 
 - `bundle/` 中的 `health_calendar.json` 是运行时应用隔离存储里的文件名，不放进 bundle。
-- 记录字段固定为 `food`、`sleep`、`mood`、`body`、`note`、`ai`；旧记录缺字段时必须安全读取。
-- AI 只能走宿主服务 `octos.session.open` 与 `octos.turn.start`，不得内置密钥或直接调用第三方模型。
+- 记录包含饮食、运动、保健品、身心和分析字段；旧记录缺字段时必须安全读取。
+- AI 可走宿主服务；Windows 开发环境可从用户本机配置导入方舟凭据，直接调用声明的 HTTPS 主机。密钥不得进入 bundle、Git 或 App 界面。
 - AI 文案必须保留“非医疗建议、不诊断、红旗症状就医”的限制。
 - 当前仅在 Windows `card-host` 上验证；不要声称 Android、iOS、macOS 或真机已验证。

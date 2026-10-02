@@ -2,14 +2,20 @@
   "capabilities": [
     "storage",
     "camera",
+    "net",
     "octos.session.open",
     "octos.turn.start"
   ],
   "id": "health-calendar",
   "integrity": {
-    "bundle_blake3": "e1068f8012934638b7c08be846a46417f1e5caa6b980c77c2f0d3aee82e7e223"
+    "bundle_blake3": "7cc833cd6db2557b6d7c08a49dae4cf4ebcbedbcced106811f9a0c7edef71282"
   },
   "name": "身心日历",
+  "network": {
+    "hosts": [
+      "ark.cn-beijing.volces.com"
+    ]
+  },
   "schema": 1,
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

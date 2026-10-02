@@ -20,6 +20,8 @@
 
 ![AI 辅助分析](bundle/screenshots/07-ai.png)
 
+![自定义选项](bundle/screenshots/08-settings.png)
+
 ## 功能详解
 
 ### 月历与统计
@@ -53,17 +55,25 @@
 - 睡眠（小时 / 质量）、情绪 / 精力、身体状态（疼痛、肠胃、过敏等）和备注。
 - 每项都带常用快捷标签，例如“轻松 / 平静 / 焦虑 / 低落”“良好 / 疲劳 / 肠胃不适 / 疼痛”，点一下填进输入框。
 
+### 自定义选项
+
+- 点右上角“设置”，可分别给饮食类别、菜系、健身器械、保健品添加选项；点现有选项末尾的 `×` 删除。
+- 自定义内容保存在本机应用隔离目录的 `settings.json`，重启后仍在。“恢复默认选项”只重置选项，不清空日历记录或 AI 配置。
+- 删除选项不会抹掉已经保存的历史记录。
+
 ### AI 辅助分析
 
-- 按钮“根据记录生成分析”会把**当天记录 + 最多 20 条历史记录**交给设备助手，请它寻找饮食、睡眠、情绪、运动、补剂之间的关联，并给出保守、可执行的建议。
+- 按钮“根据记录生成分析”会把**当天记录 + 最多 20 条历史记录**交给 AI，请它寻找饮食、睡眠、情绪、运动、补剂之间的关联，并给出保守、可执行的建议。
 - 提示词明确要求：不下医学诊断、不假装确定病因，并在出现胸痛、呼吸困难、意识异常、自伤想法或持续加重时建议立即就医；同时把记录内容标记为数据而非指令，避免记录里的文字被当成提示词执行。
-- 只有你主动点击才会发送；**照片不会被发送**，只发送文字。应用不包含也不索取模型密钥。
-- AI 不可用时界面会显示明确原因（例如 `no service answers "octos" on this device`），其余功能完全不受影响。
+- 只有你主动点击才会发送；**照片不会被发送**，只发送文字。Windows 开发环境可从本机配置导入方舟凭据。未配置时尝试 OctoSense 宿主助手。
+- AI 不可用时界面会显示明确原因，其余功能完全不受影响。分析结果保存在当天记录里，切换日期后可重新查看。
+
+2026-10-01 的演示数据已通过方舟 `ark-code-latest` 实际生成分析（原文保存在本机演示记录中）。模型指出：两次辛辣餐后记录了腹胀或胃热；力量训练后的疲劳同时伴随较短睡眠，不能归因于训练或单一补剂；午后拿铁与睡眠的关联证据较弱。它建议继续记录餐后症状、咖啡因时间、睡眠与训练强度，并提醒严重或持续加重的症状应就医。截图见上方“AI 辅助分析”。
 
 ### 数据与隐私
 
 - 记录保存在应用隔离目录的 `health_calendar.json`；照片保存在同一隔离目录的 `DCIM/`。
-- 应用不要求登录，不收集密码、密钥或设备标识，也不会在后台自动上传。
+- 应用不要求登录，也不会在后台自动上传。AI 凭据由本机脚本导入到被 Git 忽略的隔离目录，应用界面不显示它；文件本身是明文。
 - 相机是可选能力：只有在清单里声明 `camera` 时才能调用，未声明会被宿主直接拒绝。
 - 完整说明见 [PRIVACY.md](PRIVACY.md)。
 
@@ -101,7 +111,7 @@ cd <workspace>\apps\octosense-app
 .\run.ps1                 # 可见窗口，自己点着看
 .\run.ps1 -Check          # 只跑 hub 准入检查并盖戳
 .\run.ps1 -Hidden         # 无头启动，不占屏幕（适合截图 / agent）
-.\run.ps1 -Port 8142      # 换端口（默认 8141）
+.\run.ps1 -Port 8155      # 换端口（默认 8154）
 ```
 
 如果报“禁止运行脚本”，改用：
@@ -110,6 +120,19 @@ cd <workspace>\apps\octosense-app
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
+### 配置本机 AI
+
+本机已配置火山方舟 Agent Plan 时，在应用目录运行：
+
+```powershell
+.\configure-ai.ps1
+# 然后关闭并重启 App，再选一个有记录的日期点击“根据记录生成分析”
+```
+
+脚本优先读取 `ARK_API_KEY` 环境变量；没有时读取 `~/.codex/config.toml` 中指向方舟 Agent Plan 的凭据。可用 `ARK_MODEL` 指定模型（默认从 Codex 配置读取，或在 App 的“设置”里改）。运行 `.\configure-ai.ps1 -Clear` 可清除导入的凭据。`settings.json` 位于 `.local-state/health-calendar/`，已被 Git 忽略；不要把该文件加入截图或仓库。
+
+OctoSense 的网络门禁只允许清单中声明的公开 HTTPS 主机。若当前 Codex 配置指向本地 HTTP 网关，导入脚本会保留已经导入的方舟凭据；首次配置时请提供 `ARK_API_KEY`，本地 HTTP 地址不能直接用于这个 bundle。
+
 等价的手动命令：
 
 ```powershell
@@ -117,7 +140,7 @@ $env:PYTHONUTF8='1'
 $env:OCTO_HUB='<workspace>\OctoSense-App-Hub\target\release\hub.exe'
 $env:OCTO_CARD_HOST='<workspace>\OctoSense-App-Hub\target\release\card-host.exe'
 $OCTO='<workspace>\OctoScript-App-Design-Flow\tools\octo'
-python $OCTO run '<workspace>\apps\octosense-app\bundle' --port 8141
+python $OCTO run '<workspace>\apps\octosense-app\bundle' --port 8154
 ```
 
 ### 4. 校验与截图
@@ -127,10 +150,10 @@ python $OCTO run '<workspace>\apps\octosense-app\bundle' --port 8141
 python $OCTO check '<workspace>\apps\octosense-app\bundle'
 
 # 截图
-python $OCTO shot 8141 '<workspace>\apps\octosense-app\bundle\screenshots\01-calendar.png'
+python $OCTO shot 8154 '<workspace>\apps\octosense-app\bundle\screenshots\01-calendar.png'
 
 # 结束运行中的实例
-curl.exe -s http://127.0.0.1:8141/quit
+curl.exe -s http://127.0.0.1:8154/quit
 ```
 
 > `.gitattributes` 里的 `bundle/** -text` 必须保留：`main.splash` 会被宿主按字节校验完整性，行尾被 Git 转换会直接导致校验失败。
@@ -154,7 +177,7 @@ curl.exe -s http://127.0.0.1:8141/quit
 | --- | --- | --- |
 | 月历、记录、本地存储 | ✅ 已在 Windows `card-host` 实测 | 未实测 |
 | 相机拍照 | ❌ 宿主无相机后端，显示明确不可用提示 | 宿主有相机实现，未在真机实测 |
-| AI 分析 | ⚠️ 官方宿主暂无 `octos` 服务，显示明确原因 | 取决于宿主 |
+| AI 分析 | 方舟本机配置已实测；无配置时宿主 `octos` 服务可能不可用 | 取决于宿主与配置 |
 
 本仓库的截图均来自 Windows `card-host` 的真实运行。相机不可用是宿主平台的限制，不是应用缺陷：应用会捕获错误并显示原因，其他记录方式照常可用。
 

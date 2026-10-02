@@ -3,13 +3,13 @@
 #   .\run.ps1              以可见窗口启动，方便自己点着看
 #   .\run.ps1 -Hidden      无头启动（不占屏幕，适合 agent / 截图）
 #   .\run.ps1 -Check       只跑 hub 准入检查并盖戳
-#   .\run.ps1 -Port 8142   换端口（默认 8141）
+#   .\run.ps1 -Port 8155   换端口（默认 8154）
 #
 # 前提：宿主二进制已编译过（见 README「开发环境」）。
 param(
     [switch]$Hidden,
     [switch]$Check,
-    [int]$Port = 8141
+    [int]$Port = 8154
 )
 
 $ErrorActionPreference = 'Stop'
